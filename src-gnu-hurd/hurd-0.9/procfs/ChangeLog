@@ -1,0 +1,769 @@
+2014-05-28  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Do not include the terminating zero in /proc/slabinfo
+	* procfs/rootdir.c (rootdir_gc_slabinfo): Do not zero-terminate the generated
+	content.
+
+2014-05-24  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Implement /proc/slabinfo
+	Add a node 'slabinfo' to the root directory that contains information
+	about the slab allocator used in GNU Mach.
+
+	The formatting code has been taken from Richard Braun's standalone
+	client available here:
+
+	git://darnassus.sceen.net/rbraun/slabinfo.git
+
+	* procfs/rootdir.c (rootdir_gc_slabinfo): New function.
+	(rootdir_entries): Add node 'slabinfo'.
+	* procfs/Makefile (OBJS): Add mach_debugUser.o.
+	(rootdir.o): Add an explicit dependency on mach_debug_U.h.
+	Furthermore, add rules to create both functions.
+
+2013-10-05  Richard Braun  <rbraun@sceen.net>
+
+	Fix mtab translator leak
+	The node structure for the `mounts' entry is created and destroyed on
+	each access, despite the fact a translator is activated on it. Fix the
+	issue by caching it.
+
+	* procfs/rootdir.c (rootdir_mounts_node): New variable.
+	(rootdir_mounts_node_lock): Likewise.
+	(rootdir_mounts_make_node): New function.
+	(rootdir_translator_make_node): Remove function.
+	(rootdir_entries): Replace `rootdir_translator_make_node' with
+	`rootdir_mounts_make_node'.
+
+2013-09-15  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Serve mounts node with a passive translator record
+	Make mounts a node with a passive translator record so that the mtab
+	translator is started on access if it is available.
+
+	* procfs/rootdir.c (MTAB_TRANSLATOR): New macro.
+	(rootdir_mounts_get_translator): New function.
+	(rootdir_mounts_exists): New function.
+	(rootdir_translator_make_node): Likewise.
+	(rootdir_entries): Add "mounts" node.
+
+2013-09-15  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Make start_code and end_code available in /proc/*/stat
+	This makes killall5 actually kill any processes not marked as
+	important.
+
+	* procfs/process.c (process_file_gc_stat): Fix {start,end}_code.
+
+2013-08-28  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: provide a more meaningful response to fsys_get_options
+	Implement our own netfs_append_args function that provides the
+	appropriate command line flags if the current values differ from the
+	default values.
+
+	* procfs/main.c (netfs_append_args): New function.
+
+2013-08-28  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: define macros for the default argument values
+	Define a macro for the default value of each command line
+	parameter. This allows one to generate a minimal response to
+	fsys_get_options requests.
+
+	* procfs/main.c: New macro definitions for default values.
+
+2013-08-28  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: handle the --update parameter
+	Split the argument handling into a common part and one for
+	fsys_update_options. Handle the --update parameter; for procfs this is
+	a no-op.
+
+	* procfs/main.c (common_options): New variable.
+	(runtime_argp_parser): Handle --update.
+	(startup_argp): New variable.
+	(netfs_runtime_argp_): New variable.
+
+2013-08-27  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Fix argument parsing
+	The switch statement was missing the default case returning
+	ARGP_ERR_UNKNOWN. This patch adds that.
+
+	* procfs/main.c (argp_parser): Add default case.
+
+2013-07-22  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	rootdir.c: Fix declaration of rootdir_fakeself_exists.
+	* procfs/rootdir.c (rootdir_fakeself_exists): Use the correct arguments for
+	  this kind of function.
+
+	rootdir.c: Fix compiler warning
+	* procfs/rootdir.c (rootdir_gc_meminfo): Use unsigned long constant.
+
+	Makefile: add -lpthread
+	* procfs/Makefile (LIBS): Link with libpthread.
+
+2013-07-22  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Fix profile link
+	* procfs/Makefile [PROFILE] (LIBS): Replace -lthreads with -lpthread
+
+2013-07-20  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Add the necessary infrastructure to serve passive translators
+	* procfs/netfs.c (netfs_get_translator): New function.
+	* procfs/procfs.c (procfs_get_translator): Likewise.
+	* procfs/procfs.h (struct procfs_node_ops): New field get_translator.
+	(procfs_get_translator): New function declaration.
+
+2013-07-20  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Fix default file ownership
+	Formerly all nodes were created so that they were owned by root:root
+	by default. This causes problems if the procfs translator is running
+	as unprivileged user and serves passive translator records, because
+	the file ownership is being used as credentials for starting
+	translators. This obviously fails if the procfs translator is not root
+	but is trying to acquire credentials including uid/gid 0.
+
+	Fix this by using the uid/gid of the procfs translator by default.
+
+	procfs.c (procfs_make_node): Fix default node ownership.
+
+2013-07-20  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	Fix procfs_node_chmod
+	Formerly only the mode_t bits cut out by S_IFMT were preserved, but
+	this does not include S_IPTRANS. Fix this by preserving everything but
+	the permission bits.
+
+	* procfs/procfs.c (procfs_node_chmod): Fix bitmask.
+
+2013-07-20  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: Ignore arguments for compatibility with Linux' procfs.
+	Ignore the --nodev, --noexec and --nosuid arguments.
+
+	* procfs/main.c (argp_parser): Ignore some arguments for compatibility.
+
+2013-06-29  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: enable fsys_set_options
+	Make procfs translators handle fsys_set_options requests by pointing
+	netfs_runtime_argp to our argp struct.
+
+	* procfs/main.c (netfs_runtime_argp): New variable.
+
+2013-06-29  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	procfs: keep old config values if the parsing fails
+	Previously if strtol failed the previous configuration value would get
+	overwritten. Prevent this by storing the result in a temporary
+	variable and update the configuration if the argument was parsed
+	correctly and passed the sanity checks.
+
+	* procfs/main.c (argp_parser): Keep old configuration in case a
+	malformed value is encountered.
+
+2013-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	procfs: fix the error handling in argp_parser
+	Do not exit using error (1, ..) but gracefully handle the error using
+	argp_error. Also fix a typo ("the a user") while touching these lines.
+
+	* procfs/main.c (argp_parser): Proper error handling.
+	(argp_parser): Fix typo.
+
+2013-03-02  Pino Toscano  <toscano.pino@tiscali.it>
+
+	Remove old hack for the "stat" permissions
+	7550343b09a94dc1c659ad74dc75b3b77e7ab0bc added a better way to set the permissions of that file,
+	so this old hack is not needed anymore.
+
+	* procfs/process.c (process_lookup_pid): Do not change the mode of ENTRIES[2].hook.
+
+2013-01-12  Richard Braun  <rbraun@sceen.net>
+
+	Report VM cache size in meminfo
+	* procfs/rootdir.c: Include <mach/gnumach.h> and <mach/vm_cache_statistics.h>.
+	(rootdir_gc_meminfo): Call vm_cache_statistics and return the VM cache size.
+
+2012-12-06  Pino Toscano  <toscano.pino@tiscali.it>
+
+	Simple implementation of statfs
+	Initial implementation of statfs reply, just returning the filesystem type and its id.
+
+	* procfs/netfs.c: Include <sys/statvfs.h> and <unistd.h>.
+	(netfs_attempt_statfs): Implement.
+
+2012-11-27  Richard Braun  <rbraun@sceen.net>
+
+	Move procfs to pthreads
+
+2012-10-19  Cyril Roelandt  <tipecaml@gmail.com>
+
+	Fix procfs link
+	Makefile (LIBS): Add -lfshelp
+
+2012-09-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Merge branch 'master' of git.savannah.gnu.org:/srv/git/hurd/procfs into jkoenig/master
+
+2012-09-11  Pino Toscano  <toscano.pino@tiscali.it>
+
+	PID stat/status: show only the first word
+	If a process changed its title to a multiword string, show only the first word
+	of it.
+
+	* procfs/process.c (args_filename_length): New function.
+	(process_file_gc_stat): Use args_filename_length.
+	(process_file_gc_status): Likewise.
+
+2012-07-12  Thomas Schwinge  <thomas@codesourcery.com>
+
+	Merge jkoenig/master into master.
+	This branch supersedes the previous one.
+
+2012-01-14  Pino Toscano  <toscano.pino@tiscali.it>
+
+	PID stat/status: show only the file name of processes
+	The Linux /proc fs shows only the file name of processes in the
+	`stat' and `status' files of every process directory, so adapt also
+	procfs to show process file names.
+
+	Add a new `args_filename` function, much similar to GNU's `basename'
+	but returning the original string also when the resulting file name
+	is an empty string.
+
+	* procfs/process.c (args_filename): New function.
+	(process_file_gc_stat): Wrap the `proc_stat_args' result with
+	`args_filename'.
+	(process_file_gc_status): Likewise.
+
+2011-12-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Revert "Do not use msgport information"
+	This reverts commit d9fc76bd4e8c9a459fad7152135b738496318415, as it breaks
+	/proc/pid/stat
+
+	Do not use msgport information
+	* procfs/process.c (process_lookup_pid): Set PSTAT_NO_MSGPORT flag.
+	* procfs/rootdir.c (get_boottime, get_idletime, rootdir_gc_cmdline): Set
+	PSTAT_NO_MSGPORT flag.
+
+2011-02-22  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Add Buffers and Cached to /proc/meminfo
+	* procfs/rootdir.c (rootdir_gc_meminfo): Add Buffers and Cached, set to 0.
+
+2010-09-14  Jeremie Koenig  <jk@jk.fr.eu.org>
+
+	Use 2 instead of 42 as the parent inode number
+	* procfs/procfs.c (procfs_make_ino): Use 2 rather than 42 as a temporary hack,
+	  since 2 is the root's inode with ext2fs.
+
+	Use the user-provided kernel PID for uptime
+	* procfs/rootdir.c (get_boottime, get_idletime): replace KERNEL_PID with the
+	  opt_kernel_pid command-line option.
+	* procfs/main.c (argp): Document the change.
+
+	Add copyright notices
+	* procfs/dircat.c, dircat.h, main.c, main.h, netfs.c, process.c, process.h,
+	  procfs.c, procfs.h, procfs_dir.c, procfs_dir.h, proclist.c,
+	  proclist.h, rootdir.c, rootdir.h: Add copyright notices.
+
+2010-08-30  Jeremie Koenig  <jk@jk.fr.eu.org>
+
+	Update the to-do list.
+	* procfs/TODO: Add more entries.
+
+	Add some comments in rootdir.c
+	* procfs/rootdir.c: Add page breaks to separate sections and add header
+	  comments for them.
+
+	Add swap information to the top-level stat file
+	* procfs/rootdir.c (rootdir_gc_meminfo): Add swap information.
+	* procfs/TODO: Update.
+
+	Add a PROFILE mode
+	* procfs/Makefile: Change FOOFLAGS defaults to appropriate values when
+	  $(PROFILE) is defined.
+	* procfs/rootdir.c: Add an "exit" file, which causes exit to be called
+	  when looked up, so that profiling data can be written to disk.
+
+	Fix leak in error case
+	* procfs/process.c (process_lookup_pid): Fix leak in error case.
+
+2010-08-30  Jeremie Koenig  <jk@jk.fr.eu.org>
+
+	Refresh nodes when they're read from the start.
+	This is necessary for top, for instance, which keeps some files open and
+	re-reads them regularly. As an extra bonus we can drop the refresh hack.
+
+	* procfs/procfs.c, procfs.h: Remove the refresh hack.
+	  (procfs_refresh): New function, invalidates the cached contents.
+	* procfs/netfs.c (netfs_attempt_read, netfs_get_dirents): Call
+	  procfs_refresh when the read is from offset 0.
+	* procfs/proclist.c (proclist_make_node): Remove the refresh hack.
+	* procfs/dircat.c (dircat_make_node): Likewise.
+	  (dircat_get_contents): Use procfs_refresh to avoid keeping old data
+	  from the component nodes.
+
+2010-08-30  Jeremie Koenig  <jk@jk.fr.eu.org>
+
+	Make sure the clock never runs backwards.
+	* procfs/process.c, rootdir.c: When converting timeval structures
+	  into seconds or jiffies, make sure that floating point rounding errors
+	  don't make the clock the result jump backwards on second boundaries.
+
+	Fix the global idle time
+	* procfs/rootdir.c: Replace INIT_PID by KERNEL_PID, for boot time and
+	  idle time purposes.  (get_idletime): New function, queries the
+	  kernel's idle thread.  (rootdir_gc_uptime, rootdir_gc_stat): Use the
+	  new function and provide the real idle time.
+
+	Cleanup pass on process.c
+	* procfs/process.c: Reorder some of the code.  Improve comments.
+	  Jiffies and clock tick are the same thing, right?  Replace the stat
+	  mode and cleanup hacks by more straightforward solutions.
+
+	Revamp procfs_dir
+	* procfs/procfs_dir.c, procfs_dir.h: Revamp the interface to make
+	  the more complicated use cases somewhat less hackish.
+	* procfs/process.c: Update, specify a default make_node function.
+	* procfs/rootdir.c: Likewise; make this optional "self" link use case
+	  somewhat less hackish.
+
+	Improve the interface for dircat_make_node
+	* procfs/dircat.c, dircat.h (dircat_make_node): Use an explicit
+	  array size for DIRS, fail with ENOMEM is any of them is NULL, and
+	  release the reference on the non-NULL nodes on any error.
+	* procfs/main.c (root_make_node): Use the new interface.
+
+	Detect asprintf's ENOMEM in procfs.c rather than everywhere
+	* procfs/procfs.h: Make CONTENTS_LEN an ssize_t rather than a size_t,
+	  and document the change.
+	* procfs/procfs.c (procfs_get_contents): Initialize CONTENTS_LEN to a
+	  negative value, and fail with ENOMEM if it's still negative after the
+	  callback returns.  (everywhere): Update to ssize_t.
+	* procfs/dircat.c, netfs.c, process.c,
+	  procfs_dir.c, proclist.c, rootdir.c: Update to
+	  ssize_t and the new GET_CONTENTS semantics.
+
+	Make contents a char* procfs/to avoid typecasts all over the place
+	* procfs/procfs.h (procfs_cleanup_contents_with_free,
+	  procfs_cleanup_contents_with_vm_deallocate, procfs_get_contents,
+	  struct procfs_ops): Change CONTENTS from a void pointer to a char one.
+	* procfs/dircat.c, netfs.c, process.c, procfs.c,
+	  procfs_dir.c, proclist.c, rootdir.c: Update.
+
+	Remove the unused procfs_file module
+	* procfs/procfs_file.c, procfs_file.h: Remove.
+	* procfs/Makefile: Remove procfs_file.
+
+	Fix the handling of processes without an owner
+	* procfs/main.c (argp_parser): New option --anonymous-owner.
+	* procfs/main.h: Publish it.
+	* procfs/process.c (process_lookup_pid): Use it to set the file owner
+	  uid of non-owned processes.
+
+	Use a global ps_context
+	* procfs/proclist.c, proclist.h (proclist_create_node): Use a
+	  ps_context passed by the caller; errors are no longer possible, rename
+	  to proclist_make_node and change the signature accordingly.
+	* procfs/rootdir.c, rootdir.h (rootdir_create_node): Likewise.
+	* procfs/main.c (main): Create the ps_context here and pass it to
+	  root_make_node.  (root_make_node): Pass it to proclist_make_node and
+	  rootdir_make_node.
+
+	Add a TODO-list
+	* procfs/TODO: New file.
+
+	netfs_server_loop never returns
+	* procfs/main.c: Don't call netfs_server_loop repeatedly; it should
+	  never return.
+
+	Handle errors in main
+	* procfs/main.c (main): Handle errors from argp_parse and
+	  root_make_node.
+
+	Add a --compatible option
+	* procfs/main.c (argp_parser): Add --compatible, which sets the options
+	  required for compatibility with the procps tools.
+
+	Add a status file to process directories
+	* procfs/process.c: Add a status file.
+
+	Add statm to process directories
+	* procfs/process.c: Add the statm file.
+
+	Add a global cmdline file
+	* procfs/main.c (argp_parser, main): Add the --kernel-pid option.
+	* procfs/main.h: Publish it.
+	* procfs/rootdir.c (rootdir_gc_cmdline): New function.
+
+	Add meminfo and vmstat
+	* procfs/rootdir.c: Add a (non-empty) meminfo and a vmstat file.
+
+	Add a fake-self option to control the self symlink
+	* procfs/main.c (argp_parse, main): Add the --fake-self option.
+	* procfs/main.h: Publish it.
+	* procfs/rootdir.c (rootdir_gc_fakeself, rootdir_entries,
+	  rootdir_create_node): Use it.
+
+	Add --stat-mode to override the perms for [pid]/stat
+	* procfs/main.c (argp_parser, main): Add the --stat-mode option.
+	* procfs/process.c (process_lookup_pid): Use it.
+
+	Add --clk-tck to set the clock unit
+	* procfs/main.c (argp_parser, main): Add and parse the --clk-tck option.
+	* procfs/main.h: Publish opt_clk_tck.
+	* procfs/process.c (sc_tc): Use the user-provided clock frequency.
+	* procfs/rootdir.c (rootdir_gc_stat): Likewise.
+
+	Play nice with the procps old_Hertz_hack
+	* procfs/rootdir.c (rootdir_gc_uptime, rootdir_gc_stat): assume a
+	  completely idle rather than completely busy system, so that the idle
+	  seconds can be meaningfully divided by the idle jiffies by procps.
+
+	Add an empty meminfo root file
+	* procfs/rootdir.c: Add "meminfo", empty for now.
+
+	Add a fake "self" symlink
+	* procfs/rootdir.c: Add a fake "self" symlink which always points to
+	  init.
+
+	Add loadavg
+	* procfs/rootdir.c: Add the root file "loadavg".
+
+	New root files: version, uptime, stat
+	* procfs/rootdir.c, rootdir.h: New files.
+	* procfs/main.c: Use rootdir_create_node.
+	* procfs/Makefile: Add the rootdir module.
+
+	Set a restrictive mode on some sensitive files
+	* procfs/process.c (process_file_make_node, entries): Set the environ
+	  and stat files as readable only by the owner of the process.
+
+	Encapsulate access to node->nn_stat
+	* procfs/procfs.c, procfs.h (procfs_node_chown,
+	  procfs_node_chmod, procfs_node_chtype): New functions, encapsulate
+	  access to some nn_stat fields.
+	* procfs/process.c (process_lookup_pid): Use procfs_node_chown instead
+	  of direct access.
+
+	Implement symlinks
+	* procfs/netfs.c (netfs_validate_stat): For symlinks, fetch the contents
+	  and propagate their length into the nn_stat.st_size field.
+	  (netfs_attempt_readlink): Implement using procfs_get_contents.
+
+	Use libps and enhance [pid]/stat
+	* procfs/Makefile: Add libps to the $(LIBS).
+	* procfs/proclist.c, proclist.h: Embed the proc server port in a
+	  ps_context structure. (proclist_make_node): Change to prototype to
+	  allow for the possibility of error.  Rename to proclist_create_node to
+	  reflect the change and non-triviality.
+	* procfs/process.c, process.h: Revamp.  Use a full-blown procstat
+	  structure instead of just the procinfo fetched from the process
+	  server.  Use the additional data to complement [pid]/stat.
+	  (process_lookup_pid): Get a ps_context structure instead of a port to
+	  the process server.
+	* procfs/main.c (root_make_node): Convert to the new interface for
+	  proclist_create_node.
+
+	Handle the ref counter spinlock on cleanup
+	* procfs/netfs.c (netfs_node_norefs): Handle the reference counters
+	  spinlock so as to avoid deadlocking on reentry.
+
+	Invent path-based inode numbers
+	* procfs/procfs.h, procfs.c (procfs_make_ino): New function,
+	  invents an inode number by hashing the parent's and the name of an
+	  entry.  (procfs_lookup): Use it to assign an inode number to child
+	  nodes at lookup time.
+	* procfs/main.c (root_make_node): Assign an arbitrary inode number to
+	  the root directory.
+
+	Implement lookup for . and ..
+	* procfs/procfs.c (procfs_lookup): Keep track of the parent directory,
+	  implement the lookup of the dot-directories.  (procfs_cleanup):
+	  Release the reference to the parent node, if applicable.
+	* procfs/procfs.h: Add a comment about the parent reference.
+	* procfs/netfs.c (netfs_attempt_lookup): Lock the looked up node after
+	  the directory has been unlocked, in case they are the same.
+
+	Add the dot entries to directories
+	* procfs/procfs_dir.c (procfs_dir_get_contents): Prepend the . and ..
+	  entries to the ones from the given table.
+
+	Add a basic [pid]/stat file
+	* procfs/process.c: Add a basic stat file.
+
+	Set the owner of process directories.
+	* procfs/process.c (process_make_node): Use the owner_uid from the
+	  procinfo structure to set the owner of the created directory.
+
+	Fuse the proclist into the root node
+	* procfs/dircat.c, dircat.h: New files, merge directories.
+	* procfs/Makefile: Add the dircat module.
+	* procfs/main.c: Use dircat to merge the proclist into the root
+	  directory, instead of having it as a stand-alone one.
+	* procfs/procfs.h, procfs.c: Add a "refresh hack" to have the
+	  contents of the root directory recreated on each request.
+	* procfs/proclist.c (proclist_make_node): Enable the hack in question.
+
+	Fetch process information and reject the non-existing ones
+	* procfs/process.c, process.h (process_make_node): Make static,
+	  include a procinfo structure into the node information.
+	  (process_lookup_pid): New function, replaces process_make_node as the
+	  outer interface, returns an error for non-existing processes.
+	* procfs/proclist.c (proclist_lookup): Convert to the new interface.
+
+	Add real process nodes
+	* procfs/process.c, process.h: New files, implement a process
+	  directory with cmdline and environ files.
+	* procfs/Makefile: Add the process module.
+	* procfs/proclist.c: Replace stub pid files with the real thing.
+
+	More cleanup possibilities
+	* procfs/procfs.c, procfs.h: Extend the signature of the
+	  cleanup_contents callback in the procfs_node_ops structure to include
+	  the hook and contents_len.  (cleanup_contents_with_free,
+	  cleanup_contents_with_vm_deallocate): New functions, can be used as
+	  a cleanup_contents callback for simple cases.
+	* procfs/procfs_dir.c, procfs_dir.h (procfs_dir_make_node):
+	  Update, add a cleanup callback, make sure the cleanup callback is
+	  invoked if there is an error.
+	* procfs/proclist.c (proclist_make_node), main.c (main): Update to match
+	  the new interfaces.
+
+	Fix the failure semantics of procfs_make_node
+	* procfs/procfs.c (procfs_make_node): Invoke the cleanup callback on
+	  failure, so that callers don't have to.
+	* procfs/procfs.h: Document the change.
+	* procfs/procfs_dir.c (procfs_dir_make_node), procfs_file.c
+	  (procfs_file_make_node), proclist.c (proclist_make_node):
+	  Update to reflect the change.
+
+	Add the list of processes as a directory
+	* procfs/proclist.h, proclist.c: New files.
+	* procfs/main.c: Add a proclist directory based on them.
+	* procfs/Makefile: Include the proclist module.
+
+	Implement simple directories
+	* procfs/procfs_dir.h: New file; declare the procfs_dir_make_node
+	  function, based on the procfs_dir_entry structure.
+	* procfs/procfs_dir.c: New file; implement simple directories.
+	* procfs/Makefile: Add the procfs_dir module.
+	* procfs/main.c: Use it.
+
+	Add a helper module for simple regular files
+	* procfs/procfs_file.h: New file, declares procfs_file_make_node.
+	* procfs/procfs_file.c: New file, implements procfs_file_make_node.
+	* procfs/main.c: Use them.
+	* procfs/Makefile: Add the procfs_file module.
+
+	Basic infrastructure
+	* procfs/procfs.h: New file; basic interfaces for procfs nodes.
+	* procfs/procfs.c: New file; implement the basic infrastructure.
+	* procfs/netfs.c: New file; bridge libnetfs and the procfs interfaces.
+	* procfs/main.c: New file; mostly a "Hello, World!" for now.
+	* procfs/Makefile: New file; standalone for now.
+
+2010-08-18  Jeremie Koenig  <jk@jk.fr.eu.org>
+
+	Implement /proc/mounts as a symlink to /etc/mtab
+	* procfs/procfs_nonpid_files.c (procfs_create_mounts): New function.
+	* procfs/procfs_dir.c (procfs_fill_root_dir): Call procfs_create_mounts.
+
+	Set an appropriate st_mode on symlinks.
+	* procfs/procfs_pid_files.c (update_pid_entries): When symlink_target is not NULL, set
+	st_size to the symlink length and st_mode to S_IFLNK | 0777.
+
+	update_pid_entries(): fix awkwardly indented uninitialized memory leak
+	* procfs/procfs_pid_files.c (update_pid_entries): Replace dynamic allocation of
+	`stat' with automatic allocation. Memset `stat' to 0.
+
+2010-08-01  Thomas Schwinge  <thomas@schwinge.name>
+
+	Switch to the new ChangeLog style.
+	* procfs/ChangeLog: Wipe out content, and add instructions about how to get it back.
+
+2010-05-31  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* procfs/procfs_nonpid_files.c (procfs_read_nonpid_meminfo): Print swap sizes
+	using %llu.
+
+2008-12-12  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* procfs/procfs_nonpid_files.c (procfs_read_nonpid_meminfo): Divide by
+	1024 value returned by get_swap_size and get_swap_free to get
+	kilobytes.
+
+2008-09-02  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/netfs.c: (netfs_get_dirents): Add call to 
+	procfs_dir_entries_remove().
+	
+2008-08-30  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/procfs_dir.c: (procfs_dir_create): Assign newly created directory to
+	its pointer in netnode.
+	(procfs_dir_remove): Removed function.
+	(free_entry): New function.
+	(ordered_unlink): Likewise.
+	(delete): Likewise.
+	(sweep): Likewise.
+	(procfs_dir_entries_remove): Likewise.
+	(is_in_pid_list): Removed call to make_dir_invalid ().
+	(procfs_fill_root_dir): struct stat *stat ->  struct stat stat.
+	Add Read and Execute permissions to all in stat.st_mode. 
+	Set stat.st_nlink to 1.
+	Set stat.st_size to 0.
+	Add struct proc_stat *ps definition.
+	Set struct proc_stat data from _proc_stat_create () function and
+	set stat.st_uid and stat.st_gid from the data in that structure.
+	* procfs/procfs_pid_files.c: (update_pid_entries): Add Read permissions
+	to all in stat->st_mode.
+	
+2008-08-29  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/AUTHORS: File removed.
+	* procfs/COPYING: Likewise.
+	* procfs/README: Likewise.	
+	
+2008-08-29  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/Makefile: (Copyright): 1997, 2000 -> 2008.
+	(CC): Removed.
+	(CFLAGS): Removed.
+	(INCLUDES): Removed.
+	(all): Removed.
+	($(target)): Removed.
+	(%.o): Removed.
+	(HURDLIBS): -lnetfs -> netfs, -lfshelp -> fshelp,
+	-liohelp -> iohelp, -lthreads -> threads, -lports -> ports,
+	-lihash -> ihash, -lps -> ps, -lshouldbeinlibc -> shouldbeinlibc.
+	(include): Add include ../Makeconf
+        
+2008-08-18  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/procfs_nonpid_files.c: (procfs_write_nonpid_stat): Changed to
+	procfs_read_nonpid_stat.
+	(procfs_write_nonpid_meminfo): Changed to procfs_read_nonpid_meminfo.
+	(procfs_write_nonpid_loadavg): Changed to procfs_read_nonpid_loadavg.
+	(procfs_write_nonpid_uptime): Changed to procfs_read_nonpid_uptime.
+	(procfs_write_nonpid_version):Changed to procfs_read_nonpid_version.
+	* procfs/procfs_pid_files.c: (procfs_write_stat_file): Changed to 
+	procfs_read_stat_file.
+	Changed the comment correspondingly from Write to Read.
+	(procfs_write_cmdline_file ): Changed to procfs_read_cmdline_file.
+	Changed the comment correspondingly from Write to Read.
+	(procfs_write_status_file): Changed to procfs_read_status_file.
+	Changed the comment correspondingly from Write to Read.
+	(procfs_write_statm_file): Changed to procfs_read_statm_file.
+	Changed the comment correspondingly from Write to Read.
+	(procfs_write_files_contents): Changed to procfs_read_files_contents.
+	Changed the comment correspondingly from Write to Read.
+	Changed the call to procfs_write_nonpid_stat to procfs_read_nonpid_stat.
+	Changed the call to procfs_write_stat_file to procfs_read_stat_file.
+	Changed the call to procfs_write_cmdline_file to 
+	procfs_read_cmdline_file.
+	Changed the call to procfs_write_status_file to
+	procfs_read_status_file.
+	Changed the call to procfs_write_statm_file to
+	procfs_read_statm_file.
+	Changed the call to procfs_write_nonpid_meminfo	to
+	procfs_read_nonpid_meminfo.
+	Changed the call to procfs_write_nonpid_loadavg to
+	procfs_read_nonpid_loadavg.
+	Changed the call to procfs_write_nonpid_uptime to
+	procfs_read_nonpid_uptime.
+	Changed the call to procfs_write_nonpid_version to
+	procfs_read_nonpid_version.
+	netfs.c: (netfs_attempt_read): Changed the call from 
+	procfs_write_files_contents to procfs_read_files_contents.
+        
+2008-08-18  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/README: Initial Documentation.
+
+2008-08-18  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/procfs_nonpid_files.c: (get_uptime): Changed the parameter type from
+	double to struct timeval.
+	Changed the parameter name from uptime_secs to uptime.
+	Removed uptime variable. 
+	Changed timersub to use the passed pointer instead of the local 
+	variable.
+	Removed the calculation of uptime_secs. 
+	(get_total_times): Changed the parameters type from double to struct
+	timeval.
+	Changed the parameters name from total_user_time_secs to 
+	total_user_time and total_system_time_secs to total_system_time.
+	New variables total_user_time_tmp, total_system_time_tmp and tmpval
+	of type struct timeval.
+	Call timerclear to clear the tmp variables. 
+	Remove calculation of times in seconds and do the same on struct 
+	timeval variables throughout using the timeradd macro.
+	Assign values of temporary local variables to the pointers passed
+	as parameters.
+	(procfs_write_nonpid_stat): Replaced variables that hold time in
+	seconds with struct timeval type variables and jiffy_t type variables.
+	Argument to get_uptime changed from uptime_secs to uptime.
+	Arguments to get_total_times changed from total_user_time_secs to
+	total_user_time and total_system_time_secs to total_system_time.
+	Replace arithematic time subtraction with timersub macro.
+	Convert all the times in struct timeval type variables to jiffy_t type.
+	Changed the type casting for the asprintf arguments to be compatible
+	with jiffy_t type.
+	(procfs_write_nonpid_uptime): Replaced variables that hold time in 
+	seconds with struct timeval type variables.
+	Argument to get_uptime changed from uptime_secs to uptime.
+	Arguments to get_total_times changed from total_user_time_secs to 
+	total_user_time and total_system_time_secs to total_system_time.
+	Replace arithematic time subtraction with timersub macro.
+	Convert all the times in struct timeval type variables to seconds.       
+
+2008-08-18  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/procfs_nonpid_files.c: (procfs_write_nonpid_version): New function.
+	* procfs/procfs_pid_files.c: (procfs_write_files_contents): Add a check
+	to find if the read is requested for the version file and 
+	corresponding a call to it.
+
+2008-08-14  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/procfs.h: (jiffy_t): New typedef.
+	* procfs/procfs_pid.h: "procfs.h" is included.
+	(struct procfs_pid_files): Changed all the occurrences of time_t to 
+	jiffy_t.
+	* procfs/procfs_pid_files.c: Removed "procfs.h".
+	(adjust_jiffy_time): Changed return type from time_t to jiffy_t.
+	Changed the type of jiffy_time variable from time_t to jiffy_t.
+	(get_live_threads_time): Changed the type of utime and stime from 
+	time_t to jiffy_t.
+	(get_stat_data): Changed the type of utime and stime from time_t to
+	jiffy_t.
+
+2008-08-14  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs/ChangeLog: New file.
+	* procfs/AUTHORS: New file.
+	* procfs/COPYING: New file.
+	* procfs/README: New file.
+	* procfs/Makefile: New file.
+	* procfs/bootstrap.c: New file.
+	* procfs/netfs.c: New file.
+	* procfs/node.c: New file.
+	* procfs/procfs.c: New file.
+	* procfs/procfs.h: New file.
+	* procfs/procfs_dir.c: New file.
+	* procfs/procfs_nonpid_files.c: New file.
+	* procfs/procfs_pid.h: New file.
+	* procfs/procfs_pid_files.c: New file.
+                        
+2008-05-13  Madhusudan.C.S  <madhusudancs@gmail.com>
+
+	* procfs//sources/hurd/procfs: New directory added to the repository.

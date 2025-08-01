@@ -1,0 +1,65 @@
+#!/bin/bash
+# Setup critical hurd translators
+
+PATH=/bin:/sbin:/hurd
+
+# BOOT_DEV="$1"
+# if [ ! "$BOOT_DEV" ]; then
+#   echo "No device to install a boot loader was specified."
+#   echo "Here are some possible devices to use:"
+#   /bin/devprobe sd0 hd0 sd1 hd1
+#   echo -n "Boot device? [none] "
+#   read BOOT_DEV
+# fi
+#
+# if [ "$BOOT_DEV" ]; then
+#   if /bin/devprobe -s "$BOOT_DEV"; then true; else
+#     echo 2>&1 "$0: $BOOT_DEV: No such device known"; exit 1
+#   fi
+# fi
+
+set -v
+
+# Make sure the filesystem is writable
+fsysopts / --writable
+
+# Set up standard passive translators
+/bin/settrans -c /servers/socket/local /hurd/pflocal
+/bin/settrans -c /servers/crash /hurd/crash --dump-core
+/bin/settrans -c /servers/password /hurd/password
+/bin/settrans -c /servers/acpi /hurd/acpi
+/bin/settrans -c /servers/bus/pci /hurd/pci-arbiter
+/bin/settrans -c /servers/shutdown /hurd/shutdown
+
+# Setup crucial devices
+cd /dev
+rm -f console
+for device in vcs std ptyp ptyq cd0 cd1 hd0 hd0s1 sd0 rumpdisk wd0 wd0s1 tty1 tty2 tty3 tty4 tty5 tty6 netdde eth0 rtc fd0 fd1 eth0 eth1 pseudo-root loop0 loop1 lpr0 lpr1; do
+  echo "Setting up $device"
+  /bin/bash /sbin/MAKEDEV $device
+done
+set +v
+
+# Rely on QEMU's default's user networking
+# https://wiki.qemu.org/Documentation/Networking
+/bin/settrans -c /servers/socket/2 /hurd/pfinet -i /dev/eth0 -a 10.0.2.15 -g 10.0.2.2 -m 255.255.255.0
+echo "nameserver 10.0.2.3" >/etc/resolv.conf
+ln -sf /servers/socket/2 /servers/socket/inet
+
+if [[ -f /sbin/sshd ]] && [[ ! -f /etc/ssh/ssh_host_rsa_key ]]; then
+  echo "Generating SSH host keys..."
+  ssh-keygen -A
+fi
+
+# if test "$BOOT_DEV" && /bin/sh ./MAKEDEV "$BOOT_DEV"; then
+#   echo -n "Install grub as main boot record on $BOOT_DEV? [y] "
+#   read yn
+#   case "$yn" in
+#     "" | "[yY]*")
+#       /bin/sh /INSTALL-GRUB-MBR /dev/$BOOT_DEV;;
+#   esac
+# fi
+
+rm -f /SETUP
+sync
+reboot

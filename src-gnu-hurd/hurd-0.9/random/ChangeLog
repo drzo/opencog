@@ -1,0 +1,37 @@
+2014-05-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Merge branch 'random' of ssh://git.savannah.gnu.org/srv/git/hurd/incubator into random
+
+	Fix buffer allocation on io_read
+	* random/random.c (trivfs_S_io_read): Catch buffer allocation error, and
+	truncate allocation when we return less data than requested.
+
+2014-04-08  Justus Winter  <4winter@informatik.uni-hamburg.de>
+
+	fix a receiver lookup
+	* random/mig-decls.h: New file.
+	* random/mig-mutate.h: Likewise.
+	* random/Makefile (MIGSFLAGS): Use mig-mutate.h.
+	* random/random.c (S_startup_dosync): Fix the receiver lookup.
+
+2012-11-27  Richard Braun  <rbraun@sceen.net>
+
+	Move random to pthreads
+	Makefiles, headers, types, macros and function calls are renamed where
+	appropriate.
+
+	* random/random.c: Switch from cthreads to pthreads.
+	* random/Makefile: Likewise.
+
+2011-08-18  Gaël Le Mignot  <kilobug@freesurf.fr>
+
+	* random/Makefile: New file.
+	* random/TODO: New file.
+	* random/gnupg-bithelp.h: New file.
+	* random/gnupg-glue.h: New file.
+	* random/gnupg-random.c: New file.
+	* random/gnupg-random.h: New file.
+	* random/gnupg-rmd.h: New file.
+	* random/gnupg-rmd160.c: New file.
+	* random/random.c: New file.
+	* random/random.h: New file.

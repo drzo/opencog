@@ -1,0 +1,10 @@
+#!/bin/sh
+# runsystem for initrd.
+
+settrans -ac /dev/mach-console /hurd/streamio console
+exec <>/dev/mach-console >&0 2>&0
+export PATH=/bin:/sbin
+echo Hello from /bin/sh!
+uname -a
+settrans -ac /proc /hurd/procfs --stat-mode=444
+exec /bin/sh -i
