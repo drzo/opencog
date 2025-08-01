@@ -1,0 +1,851 @@
+This is guile.info, produced by makeinfo version 6.7 from guile.texi.
+
+This manual documents Guile version 2.2.7.
+
+   Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Free Software
+Foundation, Inc.
+
+   Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled “GNU Free
+Documentation License.”
+INFO-DIR-SECTION The Algorithmic Language Scheme
+START-INFO-DIR-ENTRY
+* Guile Reference: (guile).     The Guile reference manual.
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+guile.info-1: 803
+guile.info-2: 302932
+guile.info-3: 602309
+guile.info-4: 901894
+guile.info-5: 1202405
+guile.info-6: 1516462
+guile.info-7: 1802530
+guile.info-8: 2101326
+guile.info-9: 2413352
+guile.info-10: 2883530
+
+Tag Table:
+(Indirect)
+Node: Top803
+Node: Preface1888
+Node: Contributors2163
+Node: Guile License4707
+Node: Introduction6223
+Node: Guile and Scheme7644
+Node: Combining with C9239
+Node: Guile and the GNU Project11546
+Node: Interactive Programming12854
+Node: Supporting Multiple Languages14528
+Node: Obtaining and Installing Guile15245
+Node: Organisation of this Manual16584
+Node: Typographical Conventions18692
+Node: Hello Guile!19465
+Node: Running Guile Interactively20097
+Node: Running Guile Scripts21061
+Node: Linking Guile into Programs21685
+Node: Writing Guile Extensions23282
+Node: Using the Guile Module System24890
+Node: Using Modules25471
+Node: Writing new Modules26457
+Node: Putting Extensions into Modules27338
+Node: Reporting Bugs28229
+Node: Hello Scheme!32466
+Node: About Data33668
+Node: Latent Typing34346
+Node: Values and Variables36318
+Node: Definition38311
+Node: About Procedures40951
+Node: Procedures as Values41896
+Node: Simple Invocation44637
+Node: Creating a Procedure46440
+Node: Lambda Alternatives49062
+Node: About Expressions51202
+Node: Evaluating52615
+Ref: Evaluating-Footnote-154823
+Node: Eval Literal54959
+Node: Eval Variable56259
+Node: Eval Procedure57012
+Node: Eval Special60166
+Node: Tail Calls62226
+Node: The REPL65125
+Node: Syntax Summary66185
+Node: About Closure68136
+Node: About Environments69350
+Node: Local Variables71218
+Node: Chaining72776
+Node: Lexical Scope75212
+Node: Scoping Example76710
+Node: Closure80703
+Node: Serial Number83044
+Node: Shared Variable84616
+Node: Callback Closure86234
+Node: OO Closure88521
+Node: Further Reading90814
+Node: Programming in Scheme91699
+Node: Guile Scheme92833
+Node: Invoking Guile93613
+Node: Command-line Options94135
+Node: Environment Variables103194
+Ref: Environment Variables-Footnote-1110173
+Node: Guile Scripting110279
+Node: The Top of a Script File111005
+Node: The Meta Switch113060
+Node: Command Line Handling117170
+Node: Scripting Examples120106
+Node: Using Guile Interactively126324
+Node: Init File127584
+Node: Readline128124
+Node: Value History128837
+Node: REPL Commands130931
+Node: Help Commands132284
+Node: Module Commands133634
+Node: Language Commands134478
+Node: Compile Commands134706
+Node: Profile Commands135291
+Node: Debug Commands136270
+Node: Inspect Commands139060
+Node: System Commands139387
+Node: Error Handling141270
+Node: Interactive Debugging142720
+Node: Using Guile in Emacs147156
+Node: Using Guile Tools149354
+Node: Installing Site Packages150400
+Node: Programming in C153011
+Node: Parallel Installations154926
+Ref: Parallel Installations-Footnote-1157836
+Node: Linking Programs With Guile157930
+Node: Guile Initialization Functions158993
+Node: A Sample Guile Main Program160696
+Node: Linking Guile with Libraries164884
+Node: A Sample Guile Extension166943
+Node: General Libguile Concepts169214
+Node: Dynamic Types170883
+Node: Garbage Collection176506
+Ref: Garbage Collection-Footnote-1181863
+Node: Control Flow182124
+Node: Asynchronous Signals188144
+Node: Multi-Threading190048
+Ref: Multi-Threading-Footnote-1198177
+Node: Defining New Foreign Object Types198382
+Node: Defining Foreign Object Types199389
+Node: Creating Foreign Objects200716
+Node: Type Checking of Foreign Objects204648
+Node: Foreign Object Memory Management205696
+Node: Foreign Objects and Scheme212974
+Node: Function Snarfing218123
+Node: Programming Overview222635
+Node: Extending Dia224130
+Node: Dia Objective225126
+Node: Dia Steps227188
+Node: Dia Objects228539
+Node: Dia Primitives234002
+Node: Dia Hook236595
+Node: Dia Structure237650
+Node: Dia Advanced239269
+Node: Scheme vs C244049
+Node: Testbed Example246101
+Ref: Testbed Example-Footnote-1247733
+Node: Programming Options247858
+Node: Available Functionality250401
+Node: Basic Constraints253071
+Node: Style Choices253292
+Node: Program Control253493
+Node: User Programming253668
+Ref: User Programming-Footnote-1256806
+Node: Autoconf Support257088
+Node: Autoconf Background257546
+Node: Autoconf Macros258566
+Node: Using Autoconf Macros265231
+Node: API Reference267843
+Node: API Overview270004
+Node: Deprecation272523
+Node: The SCM Type273655
+Node: Initialization275273
+Node: Snarfing Macros280477
+Node: Data Types283979
+Node: Booleans285743
+Node: Numbers288807
+Node: Numerical Tower290208
+Node: Integers292593
+Node: Reals and Rationals302932
+Node: Complex Numbers309130
+Node: Exactness310819
+Node: Number Syntax313538
+Node: Integer Operations315440
+Node: Comparison317900
+Node: Conversion319584
+Node: Complex321203
+Node: Arithmetic322818
+Node: Scientific333609
+Node: Bitwise Operations335473
+Node: Random341108
+Node: Characters345925
+Node: Character Sets357146
+Node: Character Set Predicates/Comparison358079
+Node: Iterating Over Character Sets359274
+Node: Creating Character Sets362668
+Node: Querying Character Sets366311
+Node: Character-Set Algebra368507
+Node: Standard Character Sets372058
+Node: Strings375503
+Node: String Syntax378782
+Node: String Predicates381404
+Node: String Constructors383844
+Node: List/String Conversion386362
+Node: String Selection387782
+Node: String Modification393159
+Node: String Comparison395210
+Node: String Searching405807
+Node: Alphabetic Case Mapping411392
+Node: Reversing and Appending Strings413954
+Node: Mapping Folding and Unfolding416476
+Node: Miscellaneous String Operations420576
+Node: Representing Strings as Bytes423432
+Node: Conversion to/from C426645
+Node: String Internals437568
+Node: Symbols439888
+Node: Symbol Data442846
+Node: Symbol Keys445165
+Node: Symbol Variables447625
+Node: Symbol Primitives448676
+Node: Symbol Props456146
+Node: Symbol Read Syntax459078
+Node: Symbol Uninterned461299
+Node: Keywords464854
+Node: Why Use Keywords?465500
+Node: Coding With Keywords467426
+Node: Keyword Read Syntax469572
+Node: Keyword Procedures471197
+Node: Pairs475328
+Node: Lists481427
+Ref: Lists-Footnote-1482303
+Node: List Syntax482504
+Ref: List Syntax-Footnote-1483512
+Node: List Predicates483619
+Node: List Constructors484614
+Node: List Selection486854
+Node: Append/Reverse488104
+Node: List Modification490434
+Node: List Searching493823
+Node: List Mapping495452
+Node: Vectors496870
+Node: Vector Syntax498165
+Node: Vector Creation498929
+Node: Vector Accessors501036
+Node: Vector Accessing from C504468
+Node: Uniform Numeric Vectors508187
+Node: Bit Vectors508885
+Node: Bytevectors514575
+Node: Bytevector Endianness516322
+Ref: Bytevector Endianness-Footnote-1517565
+Node: Bytevector Manipulation517813
+Node: Bytevectors as Integers520333
+Node: Bytevectors and Integer Lists526696
+Node: Bytevectors as Floats528593
+Node: Bytevectors as Strings530707
+Node: Bytevectors as Arrays532660
+Node: Bytevectors as Uniform Vectors533389
+Node: Arrays533708
+Node: Array Syntax535814
+Node: Array Procedures538648
+Node: Shared Arrays547820
+Node: Arrays as arrays of arrays553974
+Node: Accessing Arrays from C560586
+Node: VLists573587
+Node: Record Overview578778
+Node: SRFI-9 Records580611
+Node: Records588039
+Node: Structures592781
+Node: Vtables593610
+Node: Structure Basics595797
+Node: Vtable Contents599178
+Node: Meta-Vtables602309
+Node: Vtable Example606538
+Node: Dictionary Types609896
+Node: Association Lists611787
+Node: Alist Key Equality613121
+Node: Adding or Setting Alist Entries614013
+Node: Retrieving Alist Entries618693
+Node: Removing Alist Entries620609
+Node: Sloppy Alist Functions623449
+Node: Alist Example625725
+Node: VHashes626993
+Node: Hash Tables632351
+Node: Hash Table Examples633085
+Node: Hash Table Reference635402
+Node: Other Types645415
+Node: Foreign Objects646092
+Node: Smobs651211
+Node: Procedures660622
+Node: Lambda661357
+Node: Primitive Procedures664436
+Node: Compiled Procedures666072
+Node: Optional Arguments672721
+Node: lambda* and define*673932
+Node: ice-9 optargs677572
+Node: Case-lambda682085
+Node: Higher-Order Functions686609
+Node: Procedure Properties688535
+Node: Procedures with Setters691221
+Ref: Procedures with Setters-Footnote-1693635
+Node: Inlinable Procedures693776
+Node: Macros695657
+Ref: Macros-Footnote-1697314
+Node: Defining Macros697434
+Node: Syntax Rules700225
+Ref: Syntax Rules-Footnote-1710200
+Node: Syntax Case710377
+Node: Syntax Transformer Helpers722937
+Node: Defmacros731039
+Node: Identifier Macros733455
+Node: Syntax Parameters736725
+Ref: Syntax Parameters-Footnote-1740208
+Node: Eval When740319
+Node: Macro Expansion743184
+Node: Hygiene and the Top-Level745930
+Node: Internal Macros749989
+Node: Utility Functions751472
+Node: Equality752231
+Node: Object Properties757398
+Node: Sorting760269
+Node: Copying764723
+Node: General Conversion765593
+Node: Hooks766678
+Node: Hook Example768227
+Node: Hook Reference770122
+Node: C Hooks773687
+Node: GC Hooks777968
+Node: REPL Hooks780239
+Node: Binding Constructs780378
+Node: Top Level781169
+Node: Local Bindings784624
+Node: Internal Definitions788701
+Node: Binding Reflection791039
+Node: Binding Multiple Values791571
+Node: Control Mechanisms792202
+Node: begin793441
+Node: Conditionals796223
+Node: and or801264
+Node: while do802495
+Node: Prompts807799
+Node: Prompt Primitives808676
+Node: Shift and Reset815644
+Node: Continuations818890
+Node: Multiple Values824142
+Node: Exceptions828102
+Node: Exception Terminology829757
+Node: Catch831107
+Node: Throw Handlers837955
+Node: Throw842424
+Node: Exception Implementation844984
+Node: Error Reporting846624
+Node: Dynamic Wind848613
+Node: Fluids and Dynamic States856388
+Node: Parameters865124
+Node: Handling Errors870001
+Node: Continuation Barriers876671
+Node: Input and Output877870
+Node: Ports879014
+Node: Binary I/O882929
+Node: Encoding886958
+Node: Textual I/O892653
+Node: Simple Output899846
+Node: Buffering901894
+Node: Random Access907705
+Node: Line/Delimited909686
+Node: Default Ports913609
+Node: Port Types917023
+Node: File Ports917479
+Node: Bytevector Ports925702
+Node: String Ports926789
+Node: Custom Ports929496
+Ref: Custom Ports-Footnote-1933668
+Node: Soft Ports933754
+Node: Void Ports935578
+Node: Venerable Port Interfaces936139
+Node: Using Ports from C940814
+Node: I/O Extensions943049
+Node: Non-Blocking I/O952000
+Node: BOM Handling958043
+Node: Regular Expressions961871
+Node: Regexp Functions963053
+Node: Match Structures973897
+Node: Backslash Escapes977102
+Node: LALR(1) Parsing981277
+Node: PEG Parsing982678
+Node: PEG Syntax Reference984146
+Node: PEG API Reference986810
+Node: PEG Tutorial997466
+Node: PEG Internals1013767
+Node: Read/Load/Eval/Compile1018054
+Node: Scheme Syntax1019369
+Node: Expression Syntax1019691
+Node: Comments1023625
+Node: Block Comments1024557
+Node: Case Sensitivity1026213
+Node: Keyword Syntax1027014
+Node: Reader Extensions1027177
+Node: Scheme Read1027767
+Node: Scheme Write1031144
+Node: Fly Evaluation1033969
+Node: Compilation1039118
+Node: Loading1045756
+Node: Load Paths1049590
+Node: Character Encoding of Source Files1056152
+Node: Delayed Evaluation1060352
+Node: Local Evaluation1061594
+Node: Local Inclusion1063463
+Node: Sandboxed Evaluation1066584
+Node: REPL Servers1079510
+Node: Cooperative REPL Servers1081434
+Node: Memory Management1083379
+Node: Garbage Collection Functions1083978
+Ref: Garbage Collection Functions-Footnote-11086952
+Node: Memory Blocks1087170
+Ref: Memory Blocks-Footnote-11093786
+Ref: Memory Blocks-Footnote-21093906
+Node: Weak References1094210
+Node: Weak hash tables1096129
+Node: Weak vectors1097771
+Node: Guardians1099041
+Node: Modules1101847
+Node: General Information about Modules1104066
+Node: Using Guile Modules1105780
+Node: Creating Guile Modules1111607
+Node: Modules and the File System1120555
+Node: R6RS Version References1122312
+Node: R6RS Libraries1125019
+Node: Variables1130440
+Node: Module System Reflection1133355
+Node: Accessing Modules from C1137898
+Node: provide and require1144792
+Node: Environments1145651
+Node: Foreign Function Interface1147716
+Node: Foreign Libraries1148805
+Ref: Foreign Libraries-Footnote-11153397
+Node: Foreign Functions1153681
+Node: C Extensions1157748
+Node: Modules and Extensions1161841
+Node: Foreign Pointers1165538
+Node: Foreign Types1166292
+Node: Foreign Variables1168434
+Node: Void Pointers and Byte Access1171572
+Node: Foreign Structs1177628
+Node: Dynamic FFI1179903
+Ref: Dynamic FFI-Footnote-11186370
+Node: Scheduling1186457
+Node: Threads1187168
+Node: Thread Local Variables1192704
+Node: Asyncs1195441
+Node: Atomics1202405
+Node: Mutexes and Condition Variables1205024
+Node: Blocking1217415
+Node: Futures1220357
+Node: Parallel Forms1224738
+Node: Options and Config1229189
+Node: Build Config1230468
+Node: Feature Tracking1234658
+Node: Feature Manipulation1235515
+Node: Common Feature Symbols1236408
+Node: Runtime Options1241164
+Node: Other Languages1243427
+Node: Using Other Languages1244390
+Node: Emacs Lisp1246141
+Node: Nil1247081
+Node: Dynamic Binding1251830
+Node: Other Elisp Features1252208
+Node: ECMAScript1252586
+Node: Internationalization1253474
+Ref: Internationalization-Footnote-11254441
+Node: i18n Introduction1254545
+Node: Text Collation1258264
+Node: Character Case Mapping1260602
+Node: Number Input and Output1262890
+Node: Accessing Locale Information1265655
+Node: Gettext Support1273745
+Node: Debugging1279683
+Node: Evaluation Model1280519
+Node: Stack Capture1282756
+Node: Stacks1285410
+Node: Frames1286720
+Node: Source Properties1289628
+Node: Programmatic Error Handling1293386
+Node: Catching Exceptions1294168
+Node: Capturing Stacks1297240
+Ref: Capturing Stacks-Footnote-11301711
+Node: Pre-Unwind Debugging1301842
+Node: Stack Overflow1305136
+Node: Debug Options1312561
+Node: Traps1314541
+Node: VM Hooks1316262
+Node: Trap Interface1320461
+Node: Low-Level Traps1323318
+Node: Tracing Traps1328033
+Node: Trap States1331909
+Node: High-Level Traps1333563
+Node: GDB Support1337494
+Node: Code Coverage1338828
+Node: Guile Modules1341710
+Node: SLIB1343181
+Node: SLIB installation1344256
+Node: JACAL1345582
+Node: POSIX1346165
+Node: Conventions1347314
+Node: Ports and File Descriptors1350699
+Node: File System1369967
+Node: User Information1387835
+Node: Time1391781
+Node: Runtime Environment1399424
+Node: Processes1403906
+Node: Signals1419687
+Node: Terminals and Ptys1429147
+Node: Pipes1430718
+Ref: Pipes-Footnote-11434393
+Node: Networking1434518
+Node: Network Address Conversion1434807
+Node: Network Databases1437483
+Node: Network Socket Address1452957
+Node: Network Sockets and Communication1457459
+Node: Internet Socket Examples1471759
+Node: System Identification1473659
+Node: Locales1475100
+Node: Encryption1476409
+Node: Web1477672
+Ref: Web-Footnote-11479606
+Node: Types and the Web1479690
+Node: URIs1484880
+Node: HTTP1493074
+Node: HTTP Headers1499463
+Node: Transfer Codings1516462
+Node: Requests1519007
+Node: Responses1525813
+Node: Web Client1531544
+Ref: http-request1532108
+Node: Web Server1535797
+Node: Web Examples1544673
+Node: getopt-long1551903
+Node: getopt-long Example1553551
+Node: Option Specification1556120
+Node: Command Line Format1559425
+Node: getopt-long Reference1562279
+Node: option-ref Reference1566128
+Node: SRFI Support1566863
+Node: About SRFI Usage1570007
+Node: SRFI-01571731
+Node: SRFI-11575120
+Node: SRFI-1 Constructors1576440
+Node: SRFI-1 Predicates1577942
+Node: SRFI-1 Selectors1580716
+Node: SRFI-1 Length Append etc1582581
+Node: SRFI-1 Fold and Map1585129
+Node: SRFI-1 Filtering and Partitioning1593539
+Node: SRFI-1 Searching1595221
+Node: SRFI-1 Deleting1599710
+Node: SRFI-1 Association Lists1602055
+Node: SRFI-1 Set Operations1604347
+Node: SRFI-21612654
+Node: SRFI-41615171
+Node: SRFI-4 Overview1616482
+Node: SRFI-4 API1619088
+Node: SRFI-4 and Bytevectors1633691
+Node: SRFI-4 Extensions1634965
+Node: SRFI-61636602
+Node: SRFI-81637126
+Node: SRFI-91637391
+Node: SRFI-101637764
+Node: SRFI-111641573
+Node: SRFI-131642472
+Node: SRFI-141642687
+Node: SRFI-161642937
+Node: SRFI-171643257
+Node: SRFI-181644980
+Node: SRFI-18 Threads1646109
+Node: SRFI-18 Mutexes1650466
+Node: SRFI-18 Condition variables1652382
+Node: SRFI-18 Time1654050
+Node: SRFI-18 Exceptions1655300
+Node: SRFI-191657928
+Node: SRFI-19 Introduction1658399
+Node: SRFI-19 Time1660207
+Node: SRFI-19 Date1664058
+Node: SRFI-19 Time/Date conversions1666898
+Node: SRFI-19 Date to string1669698
+Node: SRFI-19 String to date1672890
+Node: SRFI-231676363
+Node: SRFI-261676573
+Node: SRFI-271679905
+Node: SRFI-27 Default Random Source1680736
+Node: SRFI-27 Random Sources1681735
+Node: SRFI-27 Random Number Generators1683467
+Node: SRFI-281685928
+Node: SRFI-301686919
+Node: SRFI-311687229
+Node: SRFI-341688138
+Node: SRFI-351688595
+Node: SRFI-371694319
+Node: SRFI-381698090
+Node: SRFI-391702693
+Node: SRFI-411703576
+Node: SRFI-41 Stream Fundamentals1704378
+Node: SRFI-41 Stream Primitives1705500
+Node: SRFI-41 Stream Library1709630
+Node: SRFI-421729724
+Node: SRFI-431729971
+Node: SRFI-43 Constructors1730550
+Node: SRFI-43 Predicates1733640
+Node: SRFI-43 Selectors1734456
+Node: SRFI-43 Iteration1734807
+Node: SRFI-43 Searching1737042
+Node: SRFI-43 Mutators1740785
+Node: SRFI-43 Conversion1742409
+Node: SRFI-451743720
+Node: SRFI-461748474
+Node: SRFI-551748893
+Node: SRFI-601749912
+Node: SRFI-611753837
+Node: SRFI-621754345
+Node: SRFI-641754618
+Node: SRFI-671754883
+Node: SRFI-691755126
+Node: SRFI-69 Creating hash tables1755924
+Node: SRFI-69 Accessing table items1758678
+Node: SRFI-69 Table properties1760407
+Node: SRFI-69 Hash table algorithms1761521
+Node: SRFI-711762636
+Node: SRFI-871763171
+Node: SRFI-881763472
+Node: SRFI-981764911
+Node: SRFI-1051765698
+Node: SRFI-1111767773
+Node: R6RS Support1768362
+Node: R6RS Incompatibilities1768774
+Node: R6RS Standard Libraries1771917
+Node: Library Usage1775110
+Node: rnrs base1775843
+Node: rnrs unicode1788991
+Node: rnrs bytevectors1792095
+Node: rnrs lists1792452
+Node: rnrs sorting1795570
+Node: rnrs control1796895
+Node: R6RS Records1798126
+Node: rnrs records syntactic1802530
+Node: rnrs records procedural1806627
+Node: rnrs records inspection1809350
+Node: rnrs exceptions1811150
+Node: rnrs conditions1814384
+Node: R6RS I/O Conditions1821273
+Node: R6RS Transcoders1824189
+Node: rnrs io ports1832631
+Node: R6RS File Ports1841007
+Node: rnrs io simple1846710
+Node: rnrs files1849718
+Node: rnrs programs1850206
+Node: rnrs arithmetic fixnums1850808
+Node: rnrs arithmetic flonums1857222
+Node: rnrs arithmetic bitwise1862514
+Node: rnrs syntax-case1865594
+Node: rnrs hashtables1868806
+Node: rnrs enums1874694
+Node: rnrs1878384
+Node: rnrs eval1878869
+Node: rnrs mutable-pairs1879744
+Node: rnrs mutable-strings1880377
+Node: rnrs r5rs1881033
+Node: Pattern Matching1882246
+Node: Readline Support1892948
+Node: Loading Readline Support1893710
+Node: Readline Options1895825
+Node: Readline Functions1897200
+Node: Pretty Printing1902391
+Ref: Pretty Printing-Footnote-11906434
+Node: Formatted Output1906588
+Ref: Formatted Output-Footnote-11936495
+Node: File Tree Walk1936566
+Node: Queues1949464
+Node: Streams1952379
+Node: Buffered Input1957485
+Node: Expect1959752
+Node: sxml-match1965877
+Ref: sxml-match-Footnote-11978149
+Node: The Scheme shell (scsh)1978402
+Node: Curried Definitions1979184
+Node: Statprof1980906
+Node: SXML1990305
+Node: SXML Overview1991594
+Node: Reading and Writing XML1991779
+Node: SSAX1998092
+Node: Transforming SXML2007190
+Node: SXML Tree Fold2010226
+Node: SXPath2013885
+Ref: sxpath-procedure-docs2027316
+Node: sxml ssax input-parse2028503
+Node: sxml apply-templates2030623
+Node: Texinfo Processing2031772
+Node: texinfo2032473
+Ref: texinfo call-with-file-and-dir2034021
+Ref: texinfo texi-command-specs2034365
+Ref: texinfo texi-command-depth2034399
+Ref: texinfo texi-fragment->stexi2034868
+Ref: texinfo texi->stexi2035086
+Ref: texinfo stexi->sxml2035283
+Node: texinfo docbook2035625
+Ref: texinfo docbook *sdocbook->stexi-rules*2036178
+Ref: texinfo docbook *sdocbook-block-commands*2036217
+Ref: texinfo docbook sdocbook-flatten2036258
+Ref: texinfo docbook filter-empty-elements2037656
+Ref: texinfo docbook replace-titles2037816
+Node: texinfo html2038244
+Ref: texinfo html add-ref-resolver!2038925
+Ref: texinfo html stexi->shtml2039325
+Ref: texinfo html urlify2039490
+Node: texinfo indexing2039516
+Ref: texinfo indexing stexi-extract-index2039958
+Node: texinfo string-utils2040583
+Ref: texinfo string-utils escape-special-chars2040954
+Ref: texinfo string-utils transform-string2041682
+Ref: texinfo string-utils expand-tabs2043526
+Ref: texinfo string-utils center-string2043764
+Ref: texinfo string-utils left-justify-string2044493
+Ref: texinfo string-utils right-justify-string2044807
+Ref: texinfo string-utils collapse-repeated-chars2045113
+Ref: texinfo string-utils make-text-wrapper2045612
+Ref: texinfo string-utils fill-string2047766
+Ref: texinfo string-utils string->wrapped-lines2048069
+Node: texinfo plain-text2048446
+Ref: texinfo plain-text stexi->plain-text2048815
+Node: texinfo serialize2049112
+Ref: texinfo serialize stexi->texi2049408
+Node: texinfo reflection2049490
+Ref: texinfo reflection module-stexi-documentation2049911
+Ref: texinfo reflection script-stexi-documentation2050153
+Ref: texinfo reflection object-stexi-documentation2050399
+Ref: texinfo reflection package-stexi-standard-copying2050457
+Ref: texinfo reflection package-stexi-standard-titlepage2050760
+Ref: texinfo reflection package-stexi-generic-menu2051343
+Ref: texinfo reflection package-stexi-standard-menu2051596
+Ref: texinfo reflection package-stexi-extended-menu2051780
+Ref: texinfo reflection package-stexi-standard-prologue2051970
+Ref: texinfo reflection package-stexi-documentation2052681
+Ref: texinfo reflection package-stexi-documentation-for-include2053683
+Node: GOOPS2054637
+Node: Copyright Notice2055889
+Node: Class Definition2056738
+Ref: Class Definition-Footnote-12059938
+Ref: Class Definition-Footnote-22060007
+Ref: Class Definition-Footnote-32060180
+Node: Instance Creation2060375
+Node: Slot Options2062852
+Node: Slot Description Example2071767
+Node: Methods and Generic Functions2075932
+Node: Accessors2081536
+Node: Extending Primitives2082519
+Node: Merging Generics2083728
+Ref: Merging Generics-Footnote-12086555
+Node: Next-method2086711
+Node: Generic Function and Method Examples2088466
+Ref: fig:newplus2091316
+Ref: Generic Function and Method Examples-Footnote-12093275
+Node: Handling Invocation Errors2093479
+Node: Inheritance2094962
+Ref: fig:hier2095952
+Node: Class Precedence List2097075
+Ref: Class Precedence List-Footnote-12100399
+Node: Sorting Methods2101326
+Node: Introspection2102321
+Node: Classes2103464
+Node: Instances2105392
+Node: Slots2106727
+Node: Generic Functions2110034
+Node: Accessing Slots2111778
+Node: GOOPS Error Handling2117716
+Node: GOOPS Object Miscellany2118783
+Node: The Metaobject Protocol2121504
+Node: Metaobjects and the Metaobject Protocol2123190
+Node: Metaclasses2128115
+Node: MOP Specification2130720
+Node: Instance Creation Protocol2132352
+Node: Class Definition Protocol2135760
+Node: Customizing Class Definition2145621
+Node: Method Definition2150614
+Node: Method Definition Internals2151328
+Node: Generic Function Internals2154082
+Node: Generic Function Invocation2156766
+Node: Redefining a Class2157765
+Node: Default Class Redefinition Behaviour2158404
+Node: Customizing Class Redefinition2160709
+Node: Changing the Class of an Instance2163586
+Node: Guile Implementation2166134
+Ref: Guile Implementation-Footnote-12167393
+Node: History2167642
+Node: The Emacs Thesis2168326
+Node: Early Days2169645
+Node: A Scheme of Many Maintainers2172304
+Node: A Timeline of Selected Guile Releases2174493
+Node: Status2178328
+Node: Data Representation2181871
+Node: A Simple Representation2183500
+Node: Faster Integers2184867
+Node: Cheaper Pairs2188469
+Node: Conservative GC2191794
+Node: The SCM Type in Guile2195194
+Node: Relationship between SCM and scm_t_bits2196495
+Node: Immediate objects2197757
+Node: Non-immediate objects2200557
+Node: Allocating Cells2202024
+Node: Heap Cell Type Information2203312
+Node: Accessing Cell Entries2204279
+Node: A Virtual Machine for Guile2207841
+Node: Why a VM?2208753
+Node: VM Concepts2212036
+Node: Stack Layout2213462
+Node: Variables and the VM2216829
+Node: VM Programs2219177
+Node: Object File Format2224503
+Node: Instruction Set2229396
+Node: Lexical Environment Instructions2234308
+Node: Top-Level Environment Instructions2236898
+Node: Procedure Call and Return Instructions2239401
+Node: Function Prologue Instructions2243992
+Node: Trampoline Instructions2248179
+Node: Branch Instructions2250563
+Node: Constant Instructions2253317
+Node: Dynamic Environment Instructions2257111
+Node: Miscellaneous Instructions2261111
+Node: Inlined Scheme Instructions2262855
+Node: Inlined Atomic Instructions2267205
+Node: Inlined Mathematical Instructions2268381
+Node: Inlined Bytevector Instructions2270140
+Node: Unboxed Integer Arithmetic2272524
+Node: Unboxed Floating-Point Arithmetic2276587
+Node: Compiling to the Virtual Machine2278143
+Node: Compiler Tower2278935
+Node: The Scheme Compiler2283598
+Node: Tree-IL2287080
+Node: Continuation-Passing Style2298568
+Node: An Introduction to CPS2299222
+Node: CPS in Guile2302399
+Node: Building CPS2313776
+Node: CPS Soup2316612
+Node: Compiling CPS2324628
+Node: Bytecode2327300
+Node: Writing New High-Level Languages2333597
+Node: Extending the Compiler2334340
+Node: GNU Free Documentation License2336138
+Node: Concept Index2361503
+Node: Procedure Index2413352
+Node: Variable Index2883530
+Node: Type Index2918587
+Node: R5RS Index2929443
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:
